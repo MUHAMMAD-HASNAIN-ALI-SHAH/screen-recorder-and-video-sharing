@@ -27,9 +27,10 @@ const uploadSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  private: {
-    type: Boolean,
-    default: false,
+  type: {
+    type: String,
+    default: "public",
+    enum: ["public", "private"],
   },
   createdAt: {
     type: Date,

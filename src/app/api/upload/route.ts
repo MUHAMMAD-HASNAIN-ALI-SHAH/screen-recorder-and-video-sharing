@@ -27,10 +27,15 @@ export async function POST(req: NextRequest) {
   const title = formData.get("title") as string;
   const description = formData.get("description") as string;
   const videoFile = formData.get("video") as File;
+  let type = formData.get("type") as string;
   const thumbnailFile = formData.get("thumbnail") as File;
 
   if (!title || !description || !videoFile || !thumbnailFile) {
     return NextResponse.json({ message: "Missing fields" }, { status: 400 });
+  }
+
+  if (!type) {
+    type = "public";
   }
 
   const videoBuffer = Buffer.from(await videoFile.arrayBuffer());
@@ -60,6 +65,8 @@ export async function POST(req: NextRequest) {
       thumbnailUrl: thumbResult.secure_url,
       title,
       description,
+      type,
+      views: 0,
     });
 
     await newUpload.save();

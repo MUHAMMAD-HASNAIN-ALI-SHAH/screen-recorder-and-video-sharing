@@ -36,13 +36,17 @@ const Navbar = ({ user }: { user?: User }) => {
           <form action={logout}>
             <figure className="flex items-center gap-2">
               <Link href="/profile">
-                <Image
-                  src={userImage!}
-                  alt="User Profile"
-                  className="rounded-full aspect-square object-cover"
-                  width={32}
-                  height={32}
-                />
+                {userImage ? (
+                  <Image
+                    src={userImage}
+                    alt="User Profile"
+                    className="rounded-full aspect-square object-cover"
+                    width={32}
+                    height={32}
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-gray-300" />
+                )}
               </Link>
               <button type="submit" className="cursor-pointer">
                 <LogOutIcon className="w-5 h-5 text-gray-600 hover:text-gray-800 transition-colors" />
