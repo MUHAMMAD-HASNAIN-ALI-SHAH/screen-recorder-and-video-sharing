@@ -12,7 +12,7 @@ const Navbar = ({ user }: { user?: User }) => {
   const userImage = user?.image;
 
   return (
-    <header className="w-full bg-white shadow-md px-4 py-4">
+    <header className="fixed top-0 left-0 z-50 w-full bg-white shadow-md px-4 py-4">
       <nav className="flex justify-between items-center max-w-5xl mx-auto">
         <Link className="flex items-center gap-2" href="/">
           <Image

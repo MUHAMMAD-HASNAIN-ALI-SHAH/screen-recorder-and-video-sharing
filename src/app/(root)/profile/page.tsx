@@ -11,7 +11,7 @@ const page = async () => {
     return redirect("/signin");
   }
   return (
-    <div className="w-full flex flex-col items-center justify-center">
+    <div className="w-full flex flex-col items-center justify-center mt-15">
       <main className="w-full max-w-5xl mx-auto px-5 lg:px-0">
         <Header />
         <ProfileVideos user={user} />

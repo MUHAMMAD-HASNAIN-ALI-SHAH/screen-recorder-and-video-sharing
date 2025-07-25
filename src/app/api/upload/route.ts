@@ -4,6 +4,8 @@ import { connectDB } from "@/lib/connectDb";
 import { auth } from "@/lib/auth";
 import Video from "@/schemas/video.schema";
 import Upload from "@/schemas/upload.schema";
+import User from "@/schemas/user.schema";
+import mongoose from "mongoose";
 
 function uploadToCloudinary(buffer: Buffer, options: any): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -75,6 +77,45 @@ export async function POST(req: NextRequest) {
       {
         message: "Upload successful",
         upload: newUpload,
+      },
+      { status: 201 }
+    );
+  } catch (error: any) {
+    console.error("Upload error:", error);
+    return NextResponse.json(
+      { message: "Something went wrong", error: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(req: NextRequest) {
+  await connectDB();
+
+  try {
+    const uploads = await Upload.find({ type: "public" }).lean();
+
+    const userIds = uploads.map((u) => u.userId);
+
+    if (!mongoose.connection.db) {
+      throw new Error("Database connection is not established.");
+    }
+    const users = await mongoose.connection.db
+      .collection("users")
+      .find({ _id: { $in: userIds } })
+      .project({ name: 1, email: 1, image: 1 })
+      .toArray();
+
+    const uploadsWithUser = uploads.map((upload) => {
+      const user = users.find(
+        (u) => u._id.toString() === upload.userId.toString()
+      );
+      return { ...upload, user };
+    });
+
+    return NextResponse.json(
+      {
+        uploads: uploadsWithUser,
       },
       { status: 201 }
     );

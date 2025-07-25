@@ -1,5 +1,4 @@
 "use client";
-import userImage from "@/assets/images/emily.png";
 import Image from "next/image";
 import { Eye, Loader2 } from "lucide-react";
 import useProfileUploadStore from "@/store/useProfileUploadStore";
