@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Upload, Video } from "lucide-react";
 import Image from "next/image";
-import ScreenRecorder from "../recording/ScreenRecorder";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
@@ -31,16 +30,19 @@ const Header = async () => {
             </div>
           </div>
           <div className="flex items-center gap-4 flex-wrap">
-            <Link
-              href="/upload"
-              className="w-fit flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-full hover:bg-gray-100 transition-colors"
-            >
-              <Upload />
-              <span>Upload a Video</span>
-            </Link>
+              <Link
+                href="/upload"
+                className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <Upload />
+                <span>Upload a Video</span>
+              </Link>
 
-            <ScreenRecorder />
-          </div>
+              <button className="cursor-pointer flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-full hover:bg-gray-100 transition-colors">
+                <Video />
+                <span>Record a Video</span>
+              </button>
+            </div>
         </div>
         <h1 className="text-2xl font-semibold mt-5">My Videos</h1>
       </div>
