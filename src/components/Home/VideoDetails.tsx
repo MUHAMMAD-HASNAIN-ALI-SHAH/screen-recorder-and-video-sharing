@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
+import useHomeStore from "@/store/useHomeStore";
 
 interface User {
   name: string;
@@ -23,6 +24,7 @@ interface VideoDetailsResponse {
 }
 
 const VideoDetails = ({ videoId }: { videoId: string }) => {
+  const { addView } = useHomeStore();
   const [data, setData] = useState<VideoDetailsResponse["videoDetails"] | null>(
     null
   );
@@ -54,7 +56,7 @@ const VideoDetails = ({ videoId }: { videoId: string }) => {
     if (hasWatched.current) return;
 
     hasWatched.current = true;
-    console.log("Watched video:", videoId);
+    await addView(videoId);
   };
 
   if (loading)
@@ -79,7 +81,7 @@ const VideoDetails = ({ videoId }: { videoId: string }) => {
           controls
           className="w-full h-full"
           poster={data.thumbnailUrl}
-          onPlay={() => handleVideoWatch(data.videoId)}
+          onPlay={() => handleVideoWatch(data._id)}
         />
         {!data.thumbnailUrl ? null : (
           <Image

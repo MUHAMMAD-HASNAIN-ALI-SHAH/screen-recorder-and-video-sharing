@@ -17,6 +17,7 @@ interface HomeStore {
   }[];
   loading: boolean;
   getMyVideos: () => Promise<void>;
+  addView: (videoId: string) => Promise<void>;
 }
 
 const useHomeStore = create<HomeStore>((set) => ({
@@ -32,6 +33,18 @@ const useHomeStore = create<HomeStore>((set) => ({
       }
       const data = await response.json();
       set({ videos: data.uploads });
+    } catch (error) {
+      console.error("Error fetching videos:", error);
+    } finally {
+      set({ loading: false });
+    }
+  },
+  addView: async (videoId: string) => {
+    try {
+      set({ loading: true });
+      await fetch(`/api/upload/${videoId}`, {
+        method: "POST",
+      });
     } catch (error) {
       console.error("Error fetching videos:", error);
     } finally {

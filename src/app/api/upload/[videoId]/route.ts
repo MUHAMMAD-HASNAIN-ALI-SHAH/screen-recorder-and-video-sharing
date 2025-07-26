@@ -42,9 +42,37 @@ export async function GET(
       image: user.image,
     };
 
-    upload.videoId = video.videoUrl; 
+    upload.videoId = video.videoUrl;
 
     return NextResponse.json({ videoDetails: upload }, { status: 200 });
+  } catch (error: any) {
+    console.error("Error fetching video details:", error);
+    return NextResponse.json(
+      { message: "Server error", error: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { videoId: string } }
+) {
+  await connectDB();
+
+  try {
+    const { videoId } = params;
+
+    const upload = await Upload.findById(videoId).lean();
+
+    if (!upload || Array.isArray(upload)) {
+      return NextResponse.json({ message: "Video not found" }, { status: 404 });
+    }
+
+    upload.views = (upload.views || 0) + 1;
+    await Upload.findByIdAndUpdate(videoId, { views: upload.views });
+
+    return NextResponse.json({}, { status: 200 });
   } catch (error: any) {
     console.error("Error fetching video details:", error);
     return NextResponse.json(
