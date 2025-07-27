@@ -4,7 +4,6 @@ import { connectDB } from "@/lib/connectDb";
 import { auth } from "@/lib/auth";
 import Video from "@/schemas/video.schema";
 import Upload from "@/schemas/upload.schema";
-import User from "@/schemas/user.schema";
 import mongoose from "mongoose";
 
 function uploadToCloudinary(buffer: Buffer, options: any): Promise<any> {
@@ -121,6 +120,43 @@ export async function GET(req: NextRequest) {
     );
   } catch (error: any) {
     console.error("Upload error:", error);
+    return NextResponse.json(
+      { message: "Something went wrong", error: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  await connectDB();
+
+  const session = await auth();
+  if (!session || !session.user) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(req.url);
+  const uploadId = searchParams.get("id");
+
+  if (!uploadId) {
+    return NextResponse.json({ message: "Missing upload ID" }, { status: 400 });
+  }
+
+  try {
+    const upload = await Upload.findById(uploadId);
+    if (!upload) {
+      return NextResponse.json({ message: "Upload not found" }, { status: 404 });
+    }
+
+    if (upload.userId.toString() !== session.user.id) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 403 });
+    }
+
+    await upload.remove();
+
+    return NextResponse.json({ message: "Upload deleted successfully" }, { status: 200 });
+  } catch (error: any) {
+    console.error("Delete error:", error);
     return NextResponse.json(
       { message: "Something went wrong", error: error.message },
       { status: 500 }

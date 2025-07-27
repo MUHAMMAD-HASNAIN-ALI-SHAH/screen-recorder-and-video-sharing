@@ -3,11 +3,28 @@ import Image from "next/image";
 import { Eye, Loader2 } from "lucide-react";
 import useProfileUploadStore from "@/store/useProfileUploadStore";
 import { useEffect, useState } from "react";
+import DetailsModel from "./DetailsModel";
 
 const ProfileVideos = ({ user }: { user: any }) => {
   const { getMyVideos, videos } = useProfileUploadStore();
   const [loader, setLoader] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<{
+    _id: string;
+    title: string;
+    description: string;
+    thumbnailUrl: string;
+    views: number;
+    user: {
+      _id: string;
+      name: string;
+      image: string;
+    };
+  } | null>(null);
 
+  const closeModal = () => {
+    setIsOpen(false);
+  };
   useEffect(() => {
     const fetchVideos = async () => {
       setLoader(true);
@@ -19,6 +36,9 @@ const ProfileVideos = ({ user }: { user: any }) => {
 
   return (
     <div className="w-full">
+      {isOpen && (
+        <DetailsModel closeModal={closeModal} upload={selectedVideo!} />
+      )}
       {loader ? (
         <div className="w-full h-96 flex items-center justify-center">
           <Loader2 className="w-10 h-10 animate-spin text-gray-500 mx-auto mt-20" />
@@ -30,6 +50,10 @@ const ProfileVideos = ({ user }: { user: any }) => {
               {videos.map((video) => (
                 <div
                   key={video._id}
+                  onClick={() => {
+                    setSelectedVideo({ ...video, user });
+                    setIsOpen(true);
+                  }}
                   className="flex flex-col gap-2 bg-white shadow-md rounded-xl p-2 border border-gray-300 cursor-pointer hover:shadow-lg transition-shadow"
                 >
                   <Image

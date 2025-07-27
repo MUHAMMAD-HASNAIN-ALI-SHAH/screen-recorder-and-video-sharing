@@ -31,7 +31,7 @@ const Header = ({ user }: { user: any }) => {
           <select
             name=""
             id=""
-            className="px-4 py-2 rounded-md border border-gray-300 bg-white text-black focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-gray-300 transition duration-200"
+            className="px-1 py-2 rounded-md border border-gray-300 bg-white text-black focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-gray-300 transition duration-200"
           >
             <option value="">Most Viewed</option>
             <option value="date">Latest Viewed</option>

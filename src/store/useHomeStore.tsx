@@ -18,6 +18,7 @@ interface HomeStore {
   loading: boolean;
   getMyVideos: () => Promise<void>;
   addView: (videoId: string) => Promise<void>;
+  mostViewed: () => Promise<void>;
 }
 
 const useHomeStore = create<HomeStore>((set) => ({
@@ -47,6 +48,15 @@ const useHomeStore = create<HomeStore>((set) => ({
       });
     } catch (error) {
       console.error("Error fetching videos:", error);
+    } finally {
+      set({ loading: false });
+    }
+  },
+  mostViewed: async () => {
+    try {
+      
+    } catch (error) {
+      console.error("Error fetching most viewed videos:", error);
     } finally {
       set({ loading: false });
     }
