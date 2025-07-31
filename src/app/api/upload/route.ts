@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     // Upload video
     const videoResult = await uploadToCloudinary(videoBuffer, {
       resource_type: "video",
-      folder: "screeny/videos",
+      folder: "screeny",
     });
 
     // Save video to DB
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
     // Upload thumbnail
     const thumbResult = await uploadToCloudinary(thumbnailBuffer, {
       resource_type: "image",
-      folder: "screeny/thumbnails",
+      folder: "screeny",
     });
 
     // Save upload entry
@@ -145,7 +145,10 @@ export async function DELETE(req: NextRequest) {
   try {
     const upload = await Upload.findById(uploadId);
     if (!upload) {
-      return NextResponse.json({ message: "Upload not found" }, { status: 404 });
+      return NextResponse.json(
+        { message: "Upload not found" },
+        { status: 404 }
+      );
     }
 
     if (upload.userId.toString() !== session.user.id) {
@@ -154,7 +157,10 @@ export async function DELETE(req: NextRequest) {
 
     await upload.remove();
 
-    return NextResponse.json({ message: "Upload deleted successfully" }, { status: 200 });
+    return NextResponse.json(
+      { message: "Upload deleted successfully" },
+      { status: 200 }
+    );
   } catch (error: any) {
     console.error("Delete error:", error);
     return NextResponse.json(

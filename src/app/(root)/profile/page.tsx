@@ -1,4 +1,4 @@
-import Header from "@/components/Profile/Header";
+import Header from "@/components/Header";
 import ProfileVideos from "@/components/Profile/ProfileVideos";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -13,7 +13,7 @@ const page = async () => {
   return (
     <div className="w-full flex flex-col items-center justify-center mt-15">
       <main className="w-full max-w-5xl mx-auto px-5 lg:px-0">
-        <Header />
+        <Header user={user} />
         <ProfileVideos user={user} />
       </main>
     </div>

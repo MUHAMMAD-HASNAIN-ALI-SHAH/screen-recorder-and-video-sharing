@@ -113,20 +113,40 @@ export async function DELETE(
       return NextResponse.json({ message: "Unauthorized" }, { status: 403 });
     }
 
-    // Delete related video if it exists
+    // Delete video from Cloudinary
     if (upload.videoId) {
       const video = await Video.findById(upload.videoId);
       if (video) {
-        const videoPublicId = video.videoUrl.split("/").pop()?.split(".")[0];
-        if (videoPublicId) await cloudinary.uploader.destroy(videoPublicId);
+        const getPublicId = (url: string) => {
+          try {
+            const split1 = url.split("/upload/")[1];
+            const withoutVersion = split1.split("/").slice(1).join("/");
+            const publicId = withoutVersion.split(".")[0];
+            return publicId;
+          } catch {
+            return null;
+          }
+        };
+
+        const videoPublicId = getPublicId(video.videoUrl);
+        if (videoPublicId) {
+          const res = await cloudinary.uploader.destroy(videoPublicId, {
+            resource_type: "video",
+          });
+        }
+
         await video.deleteOne();
       }
     }
 
-    // Delete thumbnail if it exists
+    // Delete thumbnail from Cloudinary
     if (upload.thumbnailId) {
-      const thumbPublicId = upload.thumbnailId.split("/").pop()?.split(".")[0];
-      if (thumbPublicId) await cloudinary.uploader.destroy(thumbPublicId);
+      const thumbPublicId = upload.thumbnailId
+        .split("/upload/")[1]
+        ?.split(".")[0];
+      if (thumbPublicId) {
+        const res = await cloudinary.uploader.destroy(thumbPublicId);
+      }
     }
 
     await upload.deleteOne();
@@ -139,6 +159,71 @@ export async function DELETE(
     console.error("Delete error:", error);
     return NextResponse.json(
       { message: "Something went wrong", error: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+// Extract public ID from full Cloudinary URL
+function extractCloudinaryPublicId(url: string) {
+  try {
+    const withoutExtension = url.split(".")[0];
+    const parts = withoutExtension.split("/");
+    return parts.slice(-2).join("/"); // works for folders or root uploads
+  } catch {
+    return null;
+  }
+}
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: { videoId: string } }
+) {
+  await connectDB();
+  const { videoId } = params;
+  const session = await auth();
+
+  if (!session || !session.user) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const body = await req.json();
+    const { title, description } = body;
+
+    if (!title || !description) {
+      return NextResponse.json(
+        { message: "Title and description are required" },
+        { status: 400 }
+      );
+    }
+
+    const upload = await Upload.findById(videoId);
+
+    if (!upload) {
+      return NextResponse.json(
+        { message: "Upload not found" },
+        { status: 404 }
+      );
+    }
+
+    if (upload.userId.toString() !== session.user.id) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 403 });
+    }
+
+    upload.title = title;
+    upload.description = description;
+
+    await upload.save();
+
+    return NextResponse.json(
+      { message: "Upload updated successfully" },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error("Edit error:", error);
+    return NextResponse.json(
+      { message: "Server error", error: error.message },
       { status: 500 }
     );
   }

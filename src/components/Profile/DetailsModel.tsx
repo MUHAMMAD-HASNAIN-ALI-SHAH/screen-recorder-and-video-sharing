@@ -1,10 +1,8 @@
 "use client";
-
 import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Loader2 } from "lucide-react";
-import useHomeStore from "@/store/useHomeStore";
 import useProfileUploadStore from "@/store/useProfileUploadStore";
 
 interface DetailsModelProps {
@@ -19,6 +17,7 @@ interface DetailsModelProps {
 }
 
 const DetailsModel: React.FC<DetailsModelProps> = ({ closeModal, upload }) => {
+  const { editUpload } = useProfileUploadStore();
   const [title, setTitle] = useState(upload.title);
   const [description, setDescription] = useState(upload.description);
   const [hasChanged, setHasChanged] = useState(false);
@@ -32,15 +31,11 @@ const DetailsModel: React.FC<DetailsModelProps> = ({ closeModal, upload }) => {
   const handleEdit = async () => {
     setIsEditing(true);
     try {
-      // Simulate request
       await new Promise((res) => setTimeout(res, 1000));
-      console.log("Edited Data:", {
-        _id: upload._id,
-        title,
-        description,
-      });
+      editUpload(upload._id, title, description);
       toast.success("Video updated successfully!");
       setHasChanged(false);
+      closeModal();
     } catch (err) {
       toast.error("Failed to update video");
     } finally {
