@@ -1,7 +1,13 @@
 import VideoDetails from "@/components/Home/VideoDetails";
 
-const page = async ({ params }: { params: { videoId: string } }) => {
-  const videoId = params.videoId;
+interface PageProps {
+  params: {
+    videoId: string;
+  };
+}
+
+const Page = ({ params }: PageProps) => {
+  const { videoId } = params;
 
   if (!videoId) {
     return <div>Video not found</div>;
@@ -16,4 +22,4 @@ const page = async ({ params }: { params: { videoId: string } }) => {
   );
 };
 
-export default page;
+export default Page;
