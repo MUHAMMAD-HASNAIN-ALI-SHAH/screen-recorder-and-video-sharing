@@ -3,8 +3,11 @@ import { create } from "zustand";
 interface CreateVideoStore {
   videoUrl: string | null;
   isRecording: boolean;
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
   startRecording: () => Promise<void>;
   stopRecording: () => void;
+  resetAll: () => void;
 }
 
 const useCreateVideoStore = create<CreateVideoStore>((set, get) => {
@@ -13,11 +16,14 @@ const useCreateVideoStore = create<CreateVideoStore>((set, get) => {
   let stream: MediaStream | null = null;
 
   return {
+    isOpen: false,
     videoUrl: null,
     isRecording: false,
 
+    setIsOpen: (isOpen: boolean) => set({ isOpen }),
     startRecording: async () => {
       try {
+        if (get().isRecording) return;
         stream = await navigator.mediaDevices.getDisplayMedia({
           video: true,
           audio: true,
@@ -51,11 +57,20 @@ const useCreateVideoStore = create<CreateVideoStore>((set, get) => {
     },
 
     stopRecording: () => {
+
       if (mediaRecorder && mediaRecorder.state !== "inactive") {
         mediaRecorder.stop();
         set({ isRecording: false });
         stream?.getTracks().forEach((track) => track.stop());
       }
+      set({ isOpen: true });
+    },
+    resetAll: () => {
+      set({ videoUrl: null, isRecording: false });
+      recordedChunks = [];
+      mediaRecorder = null;
+      stream?.getTracks().forEach((track) => track.stop());
+      stream = null;
     },
   };
 });

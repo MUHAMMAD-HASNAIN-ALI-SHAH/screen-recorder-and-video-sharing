@@ -4,9 +4,18 @@ import Link from "next/link";
 import { Upload, Video } from "lucide-react";
 import Image from "next/image";
 import useCreateVideoStore from "@/store/useCreateVideoStore";
+import UploadRecorderModal from "./recording/UploadRecorderModal";
 
 const Header = ({ user }: { user?: any }) => {
-  const { startRecording, isRecording, stopRecording, videoUrl } = useCreateVideoStore();
+  const {
+    startRecording,
+    isRecording,
+    stopRecording,
+    videoUrl,
+    isOpen,
+    setIsOpen,
+    resetAll,
+  } = useCreateVideoStore();
 
   const handleRecordClick = () => {
     if (!isRecording) {
@@ -16,8 +25,16 @@ const Header = ({ user }: { user?: any }) => {
     }
   };
 
+  const closeModal = () => {
+    setIsOpen(false);
+    resetAll();
+  };
+
   return (
     <header className="w-full py-6">
+      {isOpen && (
+        <UploadRecorderModal closeModal={closeModal} videoUrl={videoUrl} />
+      )}
       <div className="flex flex-col gap-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mt-2">
           {user ? (

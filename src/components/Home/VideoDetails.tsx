@@ -12,6 +12,7 @@ interface User {
 
 interface VideoDetailsResponse {
   videoDetails: {
+    _id: string;
     videoId: string;
     thumbnailUrl: string;
     title: string;
